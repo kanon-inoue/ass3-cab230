@@ -6,8 +6,9 @@ var logger = require('morgan');
 
 const options = require('./knexfile.js');
 const knex = require('knex')(options);
+const swaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
 
-var indexRouter = require('./routes/index');
 var meRouter = require('./routes/me');
 
 var app = express();
@@ -26,8 +27,9 @@ app.use((req, res, next) => {
   next();
   });
 
-app.use('/', indexRouter);
 app.use('/me', meRouter);
+app.use('/', swaggerUI.serve);
+app.get('/', swaggerUI.setup(swaggerDocument));
 app.get("/knex", function (req, res, next) {
   req.db
     .raw("SELECT VERSION()")
