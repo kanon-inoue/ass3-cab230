@@ -8,7 +8,7 @@ router.get("/countries", function (req, res, next) {
     .pluck("country")
     .orderBy("country")
     .then((rows) => {
-      res.json({Error: false, Message: "Success", Data: rows});
+      res.json({error: false, message: "Success", data: rows});
     })
 })
 
@@ -18,11 +18,11 @@ router.get("/volcano/:id", function (req, res, next) {
     .select("id", "name", "country", "region", "subregion")
     .where("id", "=", req.params.id)
     .then((rows) => {
-      res.json({Error: false, Message: "Success", Data: rows});
+      res.json({error: false, message: "Success", data: rows});
     })
     .catch((err) => {
       console.log(err);
-      res.json({Error: true, Message: "Error in MySQL query"});
+      res.json({error: true, message: "Error in MySQL query"});
     }); 
 });
 
@@ -43,11 +43,11 @@ router.get("/volcanoes", function (req, res, next) {
       }
   })
   .then((rows) => {
-    res.json({Error: false, Message: "Success", Data: rows});
+    res.json({error: false, message: "Success", data: rows});
   })
   .catch((err) => {
     console.log(err);
-    res.json({Error: true, Message: "Error in MySQL query"});
+    res.json({error: true, message: "Error in MySQL query"});
   }); 
 });
 
