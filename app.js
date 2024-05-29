@@ -10,7 +10,8 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 
 var meRouter = require('./routes/me');
-
+var apiRouter = require("./routes/api");
+// var usersRouter = require("./routes/users");
 var app = express();
 
 // view engine setup
@@ -18,6 +19,12 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
+logger.token('res', (req, res) => {
+  const headers = {}
+  res.getHeaderNames().map(h => headers[h] = res.getHeader(h))
+  return JSON.stringify(headers)
+}) 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -28,6 +35,9 @@ app.use((req, res, next) => {
   });
 
 app.use('/me', meRouter);
+app.use('/api', apiRouter);
+// app.use("/users", usersRouter);
+
 app.use('/', swaggerUI.serve);
 app.get('/', swaggerUI.setup(swaggerDocument));
 app.get("/knex", function (req, res, next) {
