@@ -1,3 +1,4 @@
+require("dotenv").config();
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -11,7 +12,7 @@ const swaggerDocument = require('./swagger.json');
 
 var meRouter = require('./routes/me');
 var apiRouter = require("./routes/api");
-var usersRouter = require("./routes/users");
+var userRouter = require("./routes/user");
 var app = express();
 
 // view engine setup
@@ -36,7 +37,7 @@ app.use((req, res, next) => {
 
 app.use('/me', meRouter);
 app.use('/', apiRouter);
-app.use("/users", usersRouter);
+app.use("/user", userRouter);
 
 app.use('/', swaggerUI.serve);
 app.get('/', swaggerUI.setup(swaggerDocument));
