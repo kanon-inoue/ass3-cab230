@@ -1,12 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-router.get("/data", function (req, res, next) {
-  console.log(req.params)
+router.get("/volcano/:id", function (req, res, next) {
   req.db
   .from("data")
   .select("id", "name", "country", "region", "subregion")
-  .where("id", "=", req.query.id)
+  .where("id", "=", req.params.id)
   .then((rows) => {
     res.json({Error: false, Message: "Success", Data: rows});
   })
@@ -16,11 +15,22 @@ router.get("/data", function (req, res, next) {
   }); 
 });
 
-router.get("/data", function (req, res, next) {
+router.get("/volcanoes", function (req, res, next) {
   req.db
   .from("data")
   .select("*")
-  .where("id", "=", req.query.id)
+  .where("country", "=", req.query.country)
+  .modify((queryBuilder) => {
+    if ("5km" === req.query.populatedWithin) {
+      queryBuilder.where("population_5km", ">", 0)
+    } else if ("10km" === req.query.populatedWithin) {
+      queryBuilder.where("population_10km", ">", 0)
+    } else if ("30km" === req.query.populatedWithin) {
+      queryBuilder.where("population_30km", ">", 0)
+    } else if ("100km" === req.query.populatedWithin) {
+      queryBuilder.where("population_100km", ">", 0)
+    }
+  })
   .then((rows) => {
     res.json({Error: false, Message: "Success", Data: rows});
   })

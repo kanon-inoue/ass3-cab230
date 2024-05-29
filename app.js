@@ -11,7 +11,7 @@ const swaggerDocument = require('./swagger.json');
 
 var meRouter = require('./routes/me');
 var apiRouter = require("./routes/api");
-// var usersRouter = require("./routes/users");
+var usersRouter = require("./routes/users");
 var app = express();
 
 // view engine setup
@@ -35,8 +35,8 @@ app.use((req, res, next) => {
   });
 
 app.use('/me', meRouter);
-app.use('/api', apiRouter);
-// app.use("/users", usersRouter);
+app.use('/', apiRouter);
+app.use("/users", usersRouter);
 
 app.use('/', swaggerUI.serve);
 app.get('/', swaggerUI.setup(swaggerDocument));
