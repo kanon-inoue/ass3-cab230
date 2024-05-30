@@ -1,5 +1,45 @@
 var express = require("express");
 var router = express.Router();
+const jwt = require('jsonwebtoken');
+const authorization = require("../middleware/authorization");
+const uuid = require("uuid");
+
+router.get("/comments/:volcano_id", authorization, function (req, res, next) {
+  req.db
+    .from("comment")
+    .select("comment", "email")
+    .where("volcano_id", "=", req.params.volcano_id)
+    .then((rows) => {
+      res.json({error: false, message: "Success", data: rows});
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({error: true, message: "Error in MySQL query"});
+    }); 
+})
+
+router.post("/comments/:volcano_id", authorization, function (req, res, next) {
+  if (!req.query.comment) {
+    res.status(400).json({
+      error: true,
+      message: "Request body incomplete, comment must be present."
+    });
+  }
+  const token = req.headers.authorization.replace(/^Bearer /, "");
+  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    req.db
+      .insert({
+        id: uuid.v4(),
+        email: decoded.email,
+        comment: req.query.comment,
+        volcano_id: req.params.volcano_id
+      })
+      .into("comment")
+      .then(() => {
+        res.json({error: false, message: "Comment successfully posted"});
+      })
+  });
+})
 
 router.get("/countries", function (req, res, next) {
   req.db
