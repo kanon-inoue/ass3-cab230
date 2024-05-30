@@ -40,8 +40,11 @@ router.put("/:email/profile", authorization, function (req, res, next) {
       req.db("user")
         .where("email", "=", req.params.email)
         .update(req.query)
-        .then((cols) => {
-          res.json(cols);
+        .then(() => {
+          res.json({
+            ...req.query,
+            email: req.params.email
+          });
         })
         .catch((err) => {
           console.log(err);

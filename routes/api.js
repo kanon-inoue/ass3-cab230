@@ -41,14 +41,14 @@ router.get("/volcanoes", function (req, res, next) {
       } else if ("100km" === req.query.populatedWithin) {
         queryBuilder.where("population_100km", ">", 0)
       }
-  })
-  .then((rows) => {
-    res.json({error: false, message: "Success", data: rows});
-  })
-  .catch((err) => {
-    console.log(err);
-    res.json({error: true, message: "Error in MySQL query"});
-  }); 
+    })
+    .then((rows) => {
+      res.json({error: false, message: "Success", data: rows});
+    })
+    .catch((err) => {
+      console.log(err);
+      res.json({error: true, message: "Error in MySQL query"});
+    }); 
 });
 
 module.exports = router;
