@@ -4,6 +4,51 @@ const jwt = require('jsonwebtoken');
 var router = express.Router();
 const authorization = require("../middleware/authorization");
 
+router.get("/:email/profile", function (req, res, next) {
+  const queryEmail = req.db.from("user").select("*").where("email", "=", req.params.email)
+  queryEmail
+    .then(users => {
+      if (users.length === 0) {
+        return res.status(404).json({
+          error: true,
+          message: "User not found"
+        })
+      }
+      const user = users[0];
+      if (req.headers.authorization) {
+        if (!("authorization" in req.headers) || !req.headers.authorization.match(/^Bearer /)) {
+          res.status(401).json({ error: true, message: "Authorization header ('Bearer token') not found" });
+          return;
+        }
+        const token = req.headers.authorization.replace(/^Bearer /, "");
+        try {
+          jwt.verify(token, process.env.JWT_SECRET);
+        } catch (e) {
+            if (e.name === "TokenExpiredError") {
+                res.status(401).json({ error: true, message: "JWT token has expired" });
+            } else {
+                res.status(401).json({ error: true, message: "Invalid JWT token" });
+            }
+            return;
+        }
+        console.log(user)
+        res.json({
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          dob: user.dob,
+          address: user.address
+        })
+      } else {
+        res.json({
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName
+        })
+      }
+    })
+  })
+
 router.put("/:email/profile", authorization, function (req, res, next) {
   if (!req.query.firstName || !req.query.lastName || !req.query.dob || !req.query.address) {
     return res.status(400).json({
