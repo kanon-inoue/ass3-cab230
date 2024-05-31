@@ -71,20 +71,67 @@ router.get("/countries", function (req, res, next) {
 })
 
 router.get("/volcano/:id", function (req, res, next) {
-  req.db
-    .from("data")
-    .select("id", "name", "country", "region", "subregion")
-    .where("id", "=", req.params.id)
-    .then((rows) => {
-      res.json({error: false, message: "Success", data: rows});
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json({error: true, message: "Error in MySQL query"});
-    }); 
+  if (req.headers.authorization) {
+    if (!("authorization" in req.headers) || !req.headers.authorization.match(/^Bearer /)) {
+      res.status(401).json({ error: true, message: "Authorization header ('Bearer token') not found" });
+      return;
+    }
+    const token = req.headers.authorization.replace(/^Bearer /, "");
+    try {
+      jwt.verify(token, process.env.JWT_SECRET);
+    } catch (e) {
+        if (e.name === "TokenExpiredError") {
+            res.status(401).json({ error: true, message: "JWT token has expired" });
+        } else {
+            res.status(401).json({ error: true, message: "Invalid JWT token" });
+        }
+        return;
+    }
+    req.db
+      .from("data")
+      .select("id", "name", "country", "region", "subregion", "last_eruption", "summit", "elevation", "latitude", "longitude", "population_5km", "population_10km", "population_30km", "population_100km")
+      .where("id", "=", req.params.id)
+      .then((rows) => {
+        if (volcanoes.length === 0) {
+          return res.status(404).json({
+            error: true,
+            message: "Volcano not found."
+          })
+        }
+        res.json({error: false, message: "Success", data: rows});
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json({error: true, message: "Error in MySQL query"});
+      });
+  } else {
+    req.db
+      .from("data")
+      .select("id", "name", "country", "region", "subregion", "last_eruption", "summit", "elevation", "latitude", "longitude")
+      .where("id", "=", req.params.id)
+      .then((rows) => {
+        if (volcanoes.length === 0) {
+          return res.status(404).json({
+            error: true,
+            message: "Volcano not found."
+          })
+        }
+        res.json({error: false, message: "Success", data: rows});
+      })
+      .catch((err) => {
+        console.log(err);
+        res.json({error: true, message: "Error in MySQL query"});
+      });
+  }
 });
 
 router.get("/volcanoes", function (req, res, next) {
+  if (req.query.country) {
+    res.status(400).json({
+      error: true,
+      message: "Country is a required query parameter."
+    });
+  }
   req.db
     .from("data")
     .select("*")
