@@ -241,6 +241,188 @@
     }
   },
   "paths": {
+    "/comments/:volcano_id": {
+      "get": {
+        "description": "Returns an object containing a user's profile information. The path parameter (email) is required and must be an email that has been registered. This route returns additional information if the user is authenticated. To be authenticated, a valid JWT token must be sent in the header of the request. To test this using Swagger, click the green 'Authorize' button at the top of this page to enter your JWT token. A JWT token can be obtained by logging in.",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "description": "Email address of a registered user",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Data"],
+        "responses": {
+          "200": {
+            "description": "Comment successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email": {
+                      "type": "string",
+                      "example": "kanon@example.com"
+                    },
+                    "comment": {
+                      "type": "string",
+                      "example": "I saw this volcano in person when I did a trip to Japan last year and it was so cool!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Volcano with that id could not be found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Volcano not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "description": "Adds a comment related to a particular volcano. A volcano id is required and must be an existing volcano id. A request body containing the comment text must be sent.",
+        "requestBody": {
+          "description": "An object containing the comment contents, which must be a string.",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "comment": {
+                    "type": "string",
+                    "example": "I saw this volcano in person when I did a trip to Japan last year and it was so cool!"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "volcano_id",
+            "in": "path",
+            "description": "ID of a volcano in the database",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "tags": ["Data"],
+        "responses": {
+          "200": {
+            "description": "Comment successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Comment successfully posted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. Click on 'Schema' below to see the possible error responses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Request body incomplete, comment must be present."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized. Click on 'Schema' below to see the possible error responses.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/MissingAuthHeader"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TokenExpired"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InvalidJWT"
+                    },
+                    {
+                      "$ref": "#/components/schemas/MalformedAuthHeader"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Volcano with that id could not be found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "boolean",
+                      "example": "true"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Volcano not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/countries": {
       "get": {
         "tags": ["Data"],

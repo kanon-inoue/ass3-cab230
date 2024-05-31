@@ -10,6 +10,12 @@ router.get("/comments/:volcano_id", authorization, function (req, res, next) {
     .select("comment", "email")
     .where("volcano_id", "=", req.params.volcano_id)
     .then((rows) => {
+      if (volcanoes.length === 0) {
+        return res.status(404).json({
+          error: true,
+          message: "Volcano not found."
+        })
+      }
       res.json({error: false, message: "Success", data: rows});
     })
     .catch((err) => {
@@ -25,6 +31,18 @@ router.post("/comments/:volcano_id", authorization, function (req, res, next) {
       message: "Request body incomplete, comment must be present."
     });
   }
+  req.db
+    .from("data")
+    .select("*")
+    .where("id", "=", req.params.id)
+    .then((volcanoes) => {
+      if (volcanoes.length === 0) {
+        return res.status(404).json({
+          error: true,
+          message: "Volcano not found."
+        })
+      }
+    })
   const token = req.headers.authorization.replace(/^Bearer /, "");
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     req.db
