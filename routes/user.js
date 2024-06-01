@@ -86,10 +86,7 @@ router.put("/:email/profile", authorization, function (req, res, next) {
         .where("email", "=", req.params.email)
         .update(req.query)
         .then(() => {
-          res.json({
-            ...req.query,
-            email: req.params.email
-          });
+          res.json(req.query);
         })
         .catch((err) => {
           console.log(err);
@@ -111,16 +108,20 @@ router.post('/login', function (req, res, next) {
   queryUsers
     .then(users => {
       if (users.length === 0) {
-        return res.status(401).json({
+        res.status(401).json({
           error: true,
           message: "Incorrect email or password"
         })
+        return null;
       }
 
       const user = users[0];
       return bcrypt.compare(req.query.password, user.password);
     })
     .then(match => {
+      if (match == null) {
+        return;
+      }
       if (!match) {
         return res.status(401).json({
           error: true,

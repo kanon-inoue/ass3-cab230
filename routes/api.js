@@ -16,7 +16,7 @@ router.get("/comments/:volcano_id", authorization, function (req, res, next) {
           message: "Volcano not found."
         })
       }
-      res.json({error: false, message: "Success", data: rows});
+      res.json({message: "Success", data: rows});
     })
     .catch((err) => {
       console.log(err);
@@ -54,7 +54,7 @@ router.post("/comments/:volcano_id", authorization, function (req, res, next) {
       })
       .into("comment")
       .then(() => {
-        res.json({error: false, message: "Comment successfully posted"});
+        res.json({message: "Comment successfully posted"});
       })
   });
 })
@@ -66,7 +66,7 @@ router.get("/countries", function (req, res, next) {
     .pluck("country")
     .orderBy("country")
     .then((rows) => {
-      res.json({error: false, message: "Success", data: rows});
+      res.json(rows);
     })
 })
 
@@ -91,14 +91,14 @@ router.get("/volcano/:id", function (req, res, next) {
       .from("data")
       .select("id", "name", "country", "region", "subregion", "last_eruption", "summit", "elevation", "latitude", "longitude", "population_5km", "population_10km", "population_30km", "population_100km")
       .where("id", "=", req.params.id)
-      .then((rows) => {
+      .then((volcanoes) => {
         if (volcanoes.length === 0) {
           return res.status(404).json({
             error: true,
             message: "Volcano not found."
           })
         }
-        res.json({error: false, message: "Success", data: rows});
+        res.json(volcanoes[0]);
       })
       .catch((err) => {
         console.log(err);
@@ -109,14 +109,14 @@ router.get("/volcano/:id", function (req, res, next) {
       .from("data")
       .select("id", "name", "country", "region", "subregion", "last_eruption", "summit", "elevation", "latitude", "longitude")
       .where("id", "=", req.params.id)
-      .then((rows) => {
+      .then((volcanoes) => {
         if (volcanoes.length === 0) {
           return res.status(404).json({
             error: true,
             message: "Volcano not found."
           })
         }
-        res.json({error: false, message: "Success", data: rows});
+        res.json(volcanoes[0]);
       })
       .catch((err) => {
         console.log(err);
@@ -126,7 +126,7 @@ router.get("/volcano/:id", function (req, res, next) {
 });
 
 router.get("/volcanoes", function (req, res, next) {
-  if (req.query.country) {
+  if (!req.query.country) {
     res.status(400).json({
       error: true,
       message: "Country is a required query parameter."
@@ -148,7 +148,7 @@ router.get("/volcanoes", function (req, res, next) {
       }
     })
     .then((rows) => {
-      res.json({error: false, message: "Success", data: rows});
+      res.json(rows);
     })
     .catch((err) => {
       console.log(err);
