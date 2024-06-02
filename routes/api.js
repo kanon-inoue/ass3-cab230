@@ -26,7 +26,7 @@ router.get("/comments/:volcano_id", authorization, function (req, res, next) {
 
 router.post("/comments/:volcano_id", authorization, function (req, res, next) {
   if (!req.query.comment) {
-    res.status(400).json({
+    return res.status(400).json({
       error: true,
       message: "Request body incomplete, comment must be present."
     });
@@ -127,7 +127,7 @@ router.get("/volcano/:id", function (req, res, next) {
 
 router.get("/volcanoes", function (req, res, next) {
   if (!req.query.country) {
-    res.status(400).json({
+    return res.status(400).json({
       error: true,
       message: "Country is a required query parameter."
     });

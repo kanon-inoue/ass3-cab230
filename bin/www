@@ -6,7 +6,7 @@
 
 var app = require('../app');
 var debug = require('debug')('volcanoes:server');
-var http = require('http');
+const https = require('https');
 
 /**
  * Get port from environment and store in Express.
@@ -15,11 +15,17 @@ var http = require('http');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
+const fs = require('fs');
+const credentials = {
+  key: fs.readFileSync("selfsigned.key","utf8"),
+  cert: fs.readFileSync("selfsigned.crt","utf8")
+};
+
 /**
- * Create HTTP server.
+ * Create HTTPS server.
  */
 
-var server = http.createServer(app);
+var server = https.createServer(credentials, app);
 
 /**
  * Listen on provided port, on all network interfaces.
